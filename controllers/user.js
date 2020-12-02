@@ -11,9 +11,16 @@ let controller = {
         // Recolect the parameters in the request
         let params = req.body;
         // Validate data 
-        let validate_fullName = !validator.isEmpty(params.fullName);
-        let validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
-        let validate_password = !validator.isEmpty(params.password);
+
+        try {
+            var validate_fullName = !validator.isEmpty(params.fullName);
+            var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+            var validate_password = !validator.isEmpty(params.password);
+        } catch (error) {
+            return res.status(200).send({
+                message: "DATA_INCOMPLETE"
+            })
+        }
 
         if (validate_fullName && validate_email && validate_password) {
             // Create user's object
