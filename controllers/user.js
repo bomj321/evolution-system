@@ -140,7 +140,8 @@ let controller = {
 
                         return res.status(200).send({
                             status: "USER_LOGGED",
-                            token: jwt.createToken(user)
+                            token: jwt.createToken(user),
+                            user
                         })
                     } else {
                         return res.status(404).send({

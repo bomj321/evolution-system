@@ -61,61 +61,6 @@ let controller = {
         }
     },
 
-
-    getTasksByUser: (req, res) => {
-        //Pick id of user && page
-        let userId = req.params.user;
-
-        if (!req.params.page || req.params.page == 0 || req.params.page == '0' || req.params.page == null || req.params.page == undefined || !validator.isInt(req.params.page)) {
-            var page = 1;
-        } else {
-            var page = parseInt(req.params.page);
-        }
-
-        //Indicate options of pagination
-
-        var options = {
-            sort: {
-                date: -1
-            },
-            populate: 'user',
-            limit: 5,
-            page: page
-        }
-
-
-        //Find paginated
-
-        Task.paginate({
-            user: userId
-        }, options, (err, tasks) => {
-
-            if (err != null) {
-                return res.status(500).send({
-                    status: "error",
-                    message: "ERROR_IN_REQUEST"
-                });
-            }
-
-
-            if (!tasks) {
-                return res.status(500).send({
-                    status: "error",
-                    message: "ERROR_GETTING_TASK"
-                });
-            }
-
-            // return response (Task and all pages)
-            return res.status(200).send({
-                status: 'success',
-                tasks: tasks.docs,
-                totalDocs: tasks.totalDocs,
-                totalPages: tasks.totalPages
-            });
-        });
-
-    },
-
     getTask: (req, res) => {
 
         //Pick id task from URL
@@ -258,14 +203,18 @@ let controller = {
         let searchString = req.params.search;
         //Pick id of user && page
         let userId = req.params.user;
-        var page = 1;
+        if (!req.params.page || req.params.page == 0 || req.params.page == '0' || req.params.page == null || req.params.page == undefined || !validator.isInt(req.params.page)) {
+            var page = 1;
+        } else {
+            var page = parseInt(req.params.page);
+        }
         //Indicate options of pagination
         var options = {
             sort: {
                 date: -1
             },
             populate: 'user',
-            limit: 5,
+            limit: 10,
             page: page
         }
 
@@ -289,8 +238,7 @@ let controller = {
 
                 ]
             }
-        }else
-        {
+        } else {
             var extendOption = {
                 user: userId
             }
