@@ -3,7 +3,7 @@ let validator = require('validator');
 let Task = require('../models/task');
 
 
-let controller = {  
+let controller = {
     save: (req, res) => {
 
         //Recolect params by post
@@ -43,7 +43,7 @@ let controller = {
                         message: "ERROR_IN_REQUEST"
                     });
                 }
-                
+
 
                 //Return response
                 return res.status(200).send({
@@ -63,8 +63,15 @@ let controller = {
 
 
     getTasksByUser: (req, res) => {
-        //Pick id of user
+        //Pick id of user && page
         let userId = req.params.user;
+
+        if (!req.params.page || req.params.page == 0 || req.params.page == '0' || req.params.page == null || req.params.page == undefined || !validator.isInt(req.params.page)) {
+            var page = 1;
+        } else {
+            var page = parseInt(req.params.page);
+        }
+
         //Indicate options of pagination
 
         var options = {
@@ -79,7 +86,9 @@ let controller = {
 
         //Find paginated
 
-        Task.paginate({user: userId}, options, (err, tasks) => {
+        Task.paginate({
+            user: userId
+        }, options, (err, tasks) => {
 
             if (err != null) {
                 return res.status(500).send({
@@ -104,7 +113,7 @@ let controller = {
                 totalPages: tasks.totalPages
             });
         });
-       
+
     },
 
     getTask: (req, res) => {
@@ -144,8 +153,6 @@ let controller = {
 
         //Pick ip of task
         let taskId = req.params.id;
-
-
         //Pick data from method POST
         var params = req.body;
         //Validate data
@@ -154,7 +161,8 @@ let controller = {
 
             var validate_title = !validator.isEmpty(params.title);
             var validate_content = !validator.isEmpty(params.content);
-            var validate_lang = !validator.isEmpty(params.lang);
+            var validate_exp = !validator.isEmpty(params.exp);
+            var validate_priority = !validator.isEmpty(params.priority);
 
         } catch (error) {
             return res.status(200).send({
@@ -162,7 +170,7 @@ let controller = {
             });
         }
 
-        if (validate_title && validate_content && validate_lang) {
+        if (validate_title && validate_content && validate_exp && validate_priority) {
             //Set a json with the data
             let update = {
                 title: params.title,
@@ -233,7 +241,7 @@ let controller = {
             if (!taskRemoved) {
                 return res.status(404).send({
                     status: "error",
-                    message: "ERROR_DELETING_TASK"
+                    message: "TASK_NOT_FOUND"
                 });
             }
 
@@ -246,46 +254,49 @@ let controller = {
     },
 
     search: (req, res) => {
-
         //Pick string to find
-
         let searchString = req.params.search;
-
-        
+        //Pick id of user && page
+        let userId = req.params.user;
+        var page = 1;
+        //Indicate options of pagination
+        var options = {
+            sort: {
+                date: -1
+            },
+            populate: 'user',
+            limit: 5,
+            page: page
+        }
 
         //Find or
-        Task.find({
-            "$or": [{
-                    "title": {
-                        "$regex": searchString,
-                        "$options": "i"
-                    }
-                },
-                {
-                    "content": {
-                        "$regex": searchString,
-                        "$options": "i"
-                    }
-                },
-                {
-                    "lang": {
-                        "$regex": searchString,
-                        "$options": "i"
-                    }
-                },
-                {
-                    "code": {
-                        "$regex": searchString,
-                        "$options": "i"
-                    }
-                }
-            ]
-        })
-        .sort([
-            ['date', 'descending']
-        ])
-        .exec((err, tasks) => {
 
+        if (searchString) {
+            var extendOption = {
+                user: userId,
+                "$or": [{
+                        "title": {
+                            "$regex": searchString,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        "content": {
+                            "$regex": searchString,
+                            "$options": "i"
+                        }
+                    }
+
+                ]
+            }
+        }else
+        {
+            var extendOption = {
+                user: userId
+            }
+        }
+
+        Task.paginate(extendOption, options, (err, tasks) => {
             if (err != null) {
                 return res.status(500).send({
                     status: "error",
@@ -299,12 +310,13 @@ let controller = {
                     message: "No hay temas disponibles"
                 });
             }
-
-
+            
             //return response
             return res.status(200).send({
                 status: "success",
-                tasks
+                tasks: tasks.docs,
+                totalDocs: tasks.totalDocs,
+                totalPages: tasks.totalPages
             });
 
         })
