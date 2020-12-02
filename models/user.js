@@ -7,7 +7,7 @@ var UserSchema = Schema({
     fullName: String,
     email: String,
     password: String,
-});
+}, { versionKey: false });
 
 UserSchema.methods.toJSON = function(){
     let obj = this.toObject();

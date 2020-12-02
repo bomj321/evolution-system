@@ -310,7 +310,7 @@ let controller = {
                     message: "No hay temas disponibles"
                 });
             }
-            
+
             //return response
             return res.status(200).send({
                 status: "success",

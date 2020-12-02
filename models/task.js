@@ -10,7 +10,8 @@ var TaskSchema = Schema({
     exp: Date,
     priority: String,
     user: { type: Schema.ObjectId, ref: 'User' },
-});
+}, { versionKey: false });
+
 
 //Load pagination in Schema
 
