@@ -12,6 +12,7 @@ let app = express();
 let user_routes = require('./routes/user');
 let task_routes = require('./routes/task');
 //let comment_routes = require('./routes/comment');
+let cors = require('cors')
 
 
 //Middlewares
@@ -20,13 +21,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 //CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-    next();
-});
+app.use(cors())
+
 
 //Rewrite Routes
 app.use('/api', user_routes)
