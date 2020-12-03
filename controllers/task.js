@@ -94,6 +94,40 @@ let controller = {
             });
     },
 
+    getTasks: (req, res) => {
+      
+        let userId = req.params.user;
+           //Find user condition
+           Task.find({
+            user: userId
+        })
+        .sort([
+            ['exp', 'descending']
+        ])
+        .exec((err, topics) => {
+
+            if (err) {
+                return res.status(500).send({
+                    status: "error",
+                    message: "ERROR_GET_TASKS"
+                });
+            }
+
+            if (!topics || topics.length == 0) {
+                return res.status(404).send({
+                    status: "error",
+                    message: "NOT_TOPICS"
+                });
+            }
+
+            //Return response
+            return res.status(200).send({
+                status: 'success',
+                topics
+            });
+
+        })    },
+
     update: (req, res) => {
 
         //Pick ip of task
