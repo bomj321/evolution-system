@@ -134,7 +134,6 @@ let controller = {
         let taskId = req.params.id;
         //Pick data from method POST
         var params = req.body;
-        console.log(params);
         //Validate data
 
         try {
