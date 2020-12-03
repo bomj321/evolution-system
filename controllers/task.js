@@ -134,6 +134,7 @@ let controller = {
         let taskId = req.params.id;
         //Pick data from method POST
         var params = req.body;
+        console.log(params);
         //Validate data
 
         try {
@@ -154,8 +155,8 @@ let controller = {
             let update = {
                 title: params.title,
                 content: params.content,
-                code: params.code,
-                lang: params.lang
+                exp: params.exp,
+                priority: params.priority
             }
 
             //Find and update of task by id and user's id
