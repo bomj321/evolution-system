@@ -56,7 +56,7 @@ let controller = {
 
         } else {
             return res.status(200).send({
-                message: 'INVALID_DATA'
+                message: 'NOT_VALID_VALIDATION'
             });
         }
     },
